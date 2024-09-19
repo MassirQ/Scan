@@ -64,7 +64,9 @@ function App() {
       } else {
         setProduct(null);
         setError('Produkt ikke fundet!');
-        setBarcode(''); 
+        setTimeout(() => {
+          setBarcode('');  // Nulstil tekstinput
+        }, 100);  // Giver lidt tid før nulstilling (kan justeres) 
       }
     }
   };
