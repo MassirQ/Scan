@@ -49,10 +49,11 @@ function App() {
   // Håndter tekstinput fra stregkodescanneren
   const handleInputChange = (event) => {
     const inputBarcode = event.target.value;
-    setBarcode(inputBarcode);
+    const trimmedBarcode = inputBarcode.trim();
+    setBarcode(trimmedBarcode);
 
-    if (inputBarcode) {
-      const foundProduct = products.find(p => p.barcode === inputBarcode);
+    if (trimmedBarcode) {
+      const foundProduct = products.find(p => p.barcode === trimmedBarcode);
       if (foundProduct) {
         setProduct(foundProduct);
         setError('');
