@@ -36,3 +36,89 @@
     transform: rotate(360deg);
   }
 }
+/* App.css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f6f8;
+  color: #333;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.app-header {
+  background-color: #4CAF50;
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+  color: white;
+  border-radius: 10px;
+}
+
+.app-header h1 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.barcode-input {
+  padding: 10px;
+  font-size: 1.2rem;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  width: 300px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.barcode-input:focus {
+  border-color: #4CAF50;
+}
+
+.product-info {
+  margin-top: 30px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.scanned-barcode {
+  font-size: 1rem;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+.product-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.product-card h2 {
+  font-size: 1.5rem;
+  color: #4CAF50;
+}
+
+.product-card p {
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
+.error-message {
+  color: red;
+  font-size: 1.2rem;
+}
+
