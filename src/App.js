@@ -62,7 +62,8 @@ function App() {
         }, 500);  // Giver lidt tid før nulstilling (kan justeres)
       } else {
         setProduct(null);
-        setError('Produkt ikke fundet.');
+        setError('Produkt ikke fundet!');
+        setBarcode(''); 
       }
     }
   };
@@ -96,7 +97,7 @@ function App() {
             <p>Pris: <strong>{formatPrice(product.price)}</strong></p>
           </div>
         ) : (
-          error && <p className="error-message">{error}</p>
+          error && <h1 className="error-message">{error}</h1>
         )}
       </main>
     </div>
