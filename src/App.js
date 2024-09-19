@@ -30,14 +30,19 @@ function App() {
 
   const parseCSV = (data) => {
     // Split CSV-data på linjeskift
+
     const rows = data.split('\n');
+    console.log(rows)
     return rows.map(row => {
       const columns = row.split(',');
+      console.log(columns[2])
       return {
         barcode: columns[0],    // Stregkoden er i kolonne A
         name: columns[4],       // Produktnavnet i kolonne D
-        price: columns[1],      // Prisen i kolonne B
+        price: `${columns[1].trim()} + "," + ${columns[2] ? columns[2].trim() : ''}`      // Prisen i kolonne B
+       
       };
+    
     });
   };
 
@@ -61,6 +66,13 @@ function App() {
       }
     }
   };
+  const formatPrice = (price) => {
+    if (!price) return '';
+    let cleanedPrice = price.replace(/[^0-9,]/g, '').trim(); 
+    cleanedPrice = cleanedPrice.replace(',', '.');
+    return cleanedPrice ? `${cleanedPrice} DKK` : '';
+  };
+  
 
   return (
     <div className="app-container">
@@ -81,7 +93,7 @@ function App() {
         {product ? (
           <div className="product-card">
             <h2>{product.name}</h2>
-            <p>Pris: <strong>{product.price} DKK</strong></p>
+            <p>Pris: <strong>{formatPrice(product.price)}</strong></p>
           </div>
         ) : (
           error && <p className="error-message">{error}</p>
