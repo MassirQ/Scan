@@ -3,7 +3,7 @@ import axios from 'axios';
 import './App.css'; // Importér CSS-filen
 
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQdZ9noxYd13q_rTcNw7Zal8bhyR8o30vDoLehvCjvfgnJFoE5bECImLSUdBuHnGT8SWkV95sgmVeo_/pub?gid=0&single=true&output=csv';
-const SERVER_ADDRESS = 'http://cefb8619668d.ngrok.app';
+const SERVER_ADDRESS = 'https://cefb8619668d.ngrok.app';  // Sørg for, at du bruger HTTPS
 
 function App() {
   const [barcode, setBarcode] = useState('');
@@ -12,7 +12,6 @@ function App() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    // Hent data fra publiceret CSV ved hjælp af axios
     fetchProducts();
   }, []);
 
@@ -76,7 +75,7 @@ function App() {
     if (!product) return;
     const priceForPrint = formatPrice(product.price).replace(' DKK', '');
 
-    axios.get(`http://${SERVER_ADDRESS}`, {
+    axios.get(SERVER_ADDRESS, {
       params: {
         command: "print",
         company: product.company,
@@ -112,9 +111,8 @@ function App() {
         {product ? (
           <div className="product-card">
             <h2>{product.name}</h2>
-          
             <p>Pris: <strong>{formatPrice(product.price)}</strong></p>
-            <button className="print-button" onClick={() => sendData(product)}>Print Prisen</button> {/* Knappen til at sende data til serveren */}
+            <button className="print-button" onClick={() => sendData(product)}>Print Prisen</button>
           </div>
         ) : (
           error && <p className="error-message">{error}</p>
