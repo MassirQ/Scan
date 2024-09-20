@@ -122,3 +122,17 @@ body {
   font-size: 1.2rem;
 }
 
+.print-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.print-button:hover {
+  background-color: #218838;
+}

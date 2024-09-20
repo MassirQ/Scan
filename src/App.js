@@ -3,6 +3,7 @@ import axios from 'axios';
 import './App.css'; // Importér CSS-filen
 
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQdZ9noxYd13q_rTcNw7Zal8bhyR8o30vDoLehvCjvfgnJFoE5bECImLSUdBuHnGT8SWkV95sgmVeo_/pub?gid=0&single=true&output=csv';
+const SERVER_ADDRESS = 'cefb8619668d.ngrok.app';
 
 function App() {
   const [barcode, setBarcode] = useState('');
@@ -29,24 +30,18 @@ function App() {
   };
 
   const parseCSV = (data) => {
-    // Split CSV-data på linjeskift
-
     const rows = data.split('\n');
-    console.log(rows)
     return rows.map(row => {
       const columns = row.split(',');
-      console.log(columns[2])
       return {
-        barcode: columns[0],    // Stregkoden er i kolonne A
-        name: columns[4],       // Produktnavnet i kolonne D
-        price: `${columns[1].trim()} + "," + ${columns[2] ? columns[2].trim() : ''}`      // Prisen i kolonne B
-       
+        barcode: columns[0].trim(),
+        price: `${columns[1].trim()}${columns[2] ? ',' + columns[2].trim() : ''}`, 
+        company: columns[3].trim(),
+        name: columns[4].trim(),
       };
-    
     });
   };
 
-  // Håndter tekstinput fra stregkodescanneren
   const handleInputChange = (event) => {
     const inputBarcode = event.target.value;
     const trimmedBarcode = inputBarcode.trim();
@@ -57,26 +52,46 @@ function App() {
       if (foundProduct) {
         setProduct(foundProduct);
         setError('');
-        // Nulstil tekstinput efter vellykket scanning
         setTimeout(() => {
-          setBarcode('');  // Nulstil tekstinput
-        }, 500);  // Giver lidt tid før nulstilling (kan justeres)
+          setBarcode('');
+        }, 500);
       } else {
         setProduct(null);
         setError('Produkt ikke fundet!');
         setTimeout(() => {
-          setBarcode('');  // Nulstil tekstinput
-        }, 100);  // Giver lidt tid før nulstilling (kan justeres) 
+          setBarcode('');
+        }, 100);
       }
     }
   };
+
   const formatPrice = (price) => {
     if (!price) return '';
     let cleanedPrice = price.replace(/[^0-9,]/g, '').trim(); 
     cleanedPrice = cleanedPrice.replace(',', '.');
     return cleanedPrice ? `${cleanedPrice} DKK` : '';
   };
-  
+
+  const sendData = (product) => {
+    if (!product) return;
+    const priceForPrint = formatPrice(product.price).replace(' DKK', '');
+
+    axios.get(`http://${SERVER_ADDRESS}`, {
+      params: {
+        command: "print",
+        company: product.company,
+        productName: product.name,
+        price: priceForPrint,
+      },
+    })
+    .then(response => {
+      alert("Data sendt til server for print!");
+    })
+    .catch(error => {
+      console.log(error);
+      alert("Der opstod en fejl ved afsendelse.");
+    });
+  };
 
   return (
     <div className="app-container">
@@ -97,10 +112,12 @@ function App() {
         {product ? (
           <div className="product-card">
             <h2>{product.name}</h2>
+          
             <p>Pris: <strong>{formatPrice(product.price)}</strong></p>
+            <button className="print-button" onClick={() => sendData(product)}>Print Prisen</button> {/* Knappen til at sende data til serveren */}
           </div>
         ) : (
-          error && <h1 className="error-message">{error}</h1>
+          error && <p className="error-message">{error}</p>
         )}
       </main>
     </div>
