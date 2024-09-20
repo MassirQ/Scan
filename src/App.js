@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './App.css'; // Importér CSS-filen
+import './App.css'; 
 
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQdZ9noxYd13q_rTcNw7Zal8bhyR8o30vDoLehvCjvfgnJFoE5bECImLSUdBuHnGT8SWkV95sgmVeo_/pub?gid=0&single=true&output=csv';
-const SERVER_ADDRESS = 'https://cefb8619668d.ngrok.app';  // Sørg for, at du bruger HTTPS
+const SERVER_ADDRESS = 'https://cefb8619668d.ngrok.app'; 
 
 function App() {
   const [barcode, setBarcode] = useState('');
@@ -37,6 +37,7 @@ function App() {
         price: `${columns[1].trim()}${columns[2] ? ',' + columns[2].trim() : ''}`, 
         company: columns[3].trim(),
         name: columns[4].trim(),
+        weight: columns[5] ? columns[5].trim(): "",
       };
     });
   };
@@ -75,22 +76,24 @@ function App() {
     if (!product) return;
     const priceForPrint = formatPrice(product.price).replace(' DKK', '');
 
-    axios.get(SERVER_ADDRESS, {
-      params: {
-        command: "print",
-        company: product.company,
-        productName: product.name,
-        price: priceForPrint,
-      },
-    })
-    .then(response => {
-      alert("Data sendt til server for print!");
-    })
-    .catch(error => {
-      console.log(error);
-      alert("Der opstod en fejl ved afsendelse.");
-    });
-  };
+   
+  axios.get(SERVER_ADDRESS, {
+    params: {
+      command: "print",
+      company: product.company,
+      productName: `${product.name} ${product.weight}`,
+      price: priceForPrint,
+    },
+    
+  })
+  .then(response => {
+    alert("Data sendt til server for print!");
+  })
+  .catch(error => {
+    console.log(error);
+    alert("Der opstod en fejl ved afsendelse: " + (error.response ? error.response.data.message : error.message));
+  });
+};
 
   return (
     <div className="app-container">
@@ -110,7 +113,7 @@ function App() {
         {barcode && <p className="scanned-barcode">Scannet Stregkode: {barcode}</p>}
         {product ? (
           <div className="product-card">
-            <h2>{product.name}</h2>
+            <h2>{product.name} {product.weight}</h2>
             <p>Pris: <strong>{formatPrice(product.price)}</strong></p>
             <button className="print-button" onClick={() => sendData(product)}>Print Prisen</button>
           </div>
