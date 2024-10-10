@@ -3,7 +3,7 @@ import axios from 'axios';
 import './App.css'; 
 
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQdZ9noxYd13q_rTcNw7Zal8bhyR8o30vDoLehvCjvfgnJFoE5bECImLSUdBuHnGT8SWkV95sgmVeo_/pub?gid=0&single=true&output=csv';
-const SERVER_ADDRESS = 'https://cefb8619668d.ngrok.app'; 
+const SERVER_ADDRESS = 'https://1d6e1e6c9b65.ngrok.app'; 
 
 function App() {
   const [barcode, setBarcode] = useState('');
