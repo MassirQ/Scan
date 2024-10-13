@@ -136,3 +136,10 @@ body {
 .print-button:hover {
   background-color: #218838;
 }
+
+.product-image {
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+}
+

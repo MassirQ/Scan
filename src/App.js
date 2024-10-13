@@ -38,6 +38,7 @@ function App() {
         company: columns[3].trim(),
         name: columns[4].trim(),
         weight: columns[5] ? columns[5].trim(): "",
+        imageUrl: columns[6] ? columns[6].trim() : "", // Assuming image URL is in the 7th column
       };
     });
   };
@@ -76,24 +77,22 @@ function App() {
     if (!product) return;
     const priceForPrint = formatPrice(product.price).replace(' DKK', '');
 
-   
-  axios.get(SERVER_ADDRESS, {
-    params: {
-      command: "print",
-      company: product.company,
-      productName: `${product.name} ${product.weight}`,
-      price: priceForPrint,
-    },
-    
-  })
-  .then(response => {
-    alert("Data sendt til server for print!");
-  })
-  .catch(error => {
-    console.log(error);
-    alert("Der opstod en fejl ved afsendelse: " + (error.response ? error.response.data.message : error.message));
-  });
-};
+    axios.get(SERVER_ADDRESS, {
+      params: {
+        command: "print",
+        company: product.company,
+        productName: `${product.name} ${product.weight}`,
+        price: priceForPrint,
+      },
+    })
+    .then(response => {
+      alert("Data sendt til server for print!");
+    })
+    .catch(error => {
+      console.log(error);
+      alert("Der opstod en fejl ved afsendelse: " + (error.response ? error.response.data.message : error.message));
+    });
+  };
 
   return (
     <div className="app-container">
@@ -115,6 +114,9 @@ function App() {
           <div className="product-card">
             <h2>{product.name} {product.weight}</h2>
             <p>Pris: <strong>{formatPrice(product.price)}</strong></p>
+            {product.imageUrl && (
+              <img src={product.imageUrl} alt={product.name} className="product-image" />
+            )}
             <button className="print-button" onClick={() => sendData(product)}>Print Prisen</button>
           </div>
         ) : (
