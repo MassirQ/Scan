@@ -2,66 +2,60 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css'; 
 
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQdZ9noxYd13q_rTcNw7Zal8bhyR8o30vDoLehvCjvfgnJFoE5bECImLSUdBuHnGT8SWkV95sgmVeo_/pub?gid=0&single=true&output=csv';
+const MySQLSERVER_ADDRESS = 'http://5.182.18.135:5001';
 const SERVER_ADDRESS = 'https://1d6e1e6c9b65.ngrok.app'; 
 
 function App() {
+  const [activeTab, setActiveTab] = useState('search');
   const [barcode, setBarcode] = useState('');
   const [product, setProduct] = useState(null);
+  const [productName, setProductName] = useState('');
+  const [productBrand, setProductBrand] = useState('');
+  const [productWeight, setProductWeight] = useState('');
+  const [retailPrice, setRetailPrice] = useState('');
   const [error, setError] = useState('');
-  const [products, setProducts] = useState([]);
+  const [successMessage,setSuccessMessage] = useState('');
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  const switchTab = (tab) => {
+    setActiveTab(tab);
+    setBarcode('');
+    setProductName('');
+    setProductBrand('');
+    setProductWeight('');
+    setRetailPrice('');
+    setProduct(null);
+    setError('');
+  };
 
-  const fetchProducts = () => {
-    axios.get(SHEET_CSV_URL)
+  const fetchProduct = (barcode) => {
+    axios.get(`${MySQLSERVER_ADDRESS}/api/product/${barcode}`)
       .then(response => {
-        const csvData = response.data;
-        const parsedData = parseCSV(csvData);
-        setProducts(parsedData);
+        console.log('Serverrespons:', response.data); 
+        
+        const foundProduct = response.data[0];
+        setBarcode('');
+  
+        if (foundProduct) {
+          setProduct(foundProduct);
+          setError('');
+        } else {
+          setProduct(null);
+          setError('Produkt ikke fundet!');
+        }
       })
       .catch(err => {
-        console.error('Fejl ved hentning af data fra CSV', err);
-        setError('Fejl ved hentning af data fra Google Sheets');
+        console.error('Fejl ved hentning af produktdata', err);
+        setError('Der opstod en fejl ved hentning af produktet.');
+        setProduct(null);
+        setBarcode('');
       });
   };
-
-  const parseCSV = (data) => {
-    const rows = data.split('\n');
-    return rows.map(row => {
-      const columns = row.split(',');
-      return {
-        barcode: columns[0].trim(),
-        price: `${columns[1].trim()}${columns[2] ? ',' + columns[2].trim() : ''}`, 
-        company: columns[3].trim(),
-        name: columns[4].trim(),
-        weight: columns[5] ? columns[5].trim(): "",
-      };
-    });
-  };
-
+  
   const handleInputChange = (event) => {
-    const inputBarcode = event.target.value;
-    const trimmedBarcode = inputBarcode.trim();
-    setBarcode(trimmedBarcode);
-
-    if (trimmedBarcode) {
-      const foundProduct = products.find(p => p.barcode === trimmedBarcode);
-      if (foundProduct) {
-        setProduct(foundProduct);
-        setError('');
-        setTimeout(() => {
-          setBarcode('');
-        }, 500);
-      } else {
-        setProduct(null);
-        setError('Produkt ikke fundet!');
-        setTimeout(() => {
-          setBarcode('');
-        }, 100);
-      }
+    const inputBarcode = event.target.value.trim();
+    setBarcode(inputBarcode);
+    if (inputBarcode) {
+      fetchProduct(inputBarcode);
     }
   };
 
@@ -74,52 +68,136 @@ function App() {
 
   const sendData = (product) => {
     if (!product) return;
-    const priceForPrint = formatPrice(product.price).replace(' DKK', '');
+    const priceForPrint = formatPrice(product.retailPrice).replace(' DKK', '');
 
-   
-  axios.get(SERVER_ADDRESS, {
-    params: {
-      command: "print",
-      company: product.company,
-      productName: `${product.name} ${product.weight}`,
-      price: priceForPrint,
-    },
-    
-  })
-  .then(response => {
-    alert("Data sendt til server for print!");
-  })
-  .catch(error => {
-    console.log(error);
-    alert("Der opstod en fejl ved afsendelse: " + (error.response ? error.response.data.message : error.message));
-  });
-};
+    axios.get(SERVER_ADDRESS, {
+      params: {
+        command: "print",
+        company: product.brandName,
+        productName: `${product.productName} ${product.productWeight}`,
+        price: priceForPrint,
+      },
+    })
+    .then(response => {
+      alert("Data sendt til server for print!");
+    })
+    .catch(error => {
+      console.log(error);
+      alert("Der opstod en fejl ved afsendelse: " + (error.response ? error.response.data.message : error.message));
+    });
+  };
+
+  const addProduct = () => {
+    axios.post(`${MySQLSERVER_ADDRESS}/api/products`, {
+      barcode,
+      productBrand,
+      productName,
+      productWeight,
+      retailPrice
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      setSuccessMessage('Produkt tilføjet succesfuldt med ID: ' + response.data.productId);
+      setError('');
+      setBarcode('');
+      setProductBrand('');
+      setProductName('');
+      setProductWeight('');
+      setRetailPrice('');
+    })
+    .catch(err => {
+      console.error('Fejl ved tilføjelse af produkt:', err);
+      if (err.response) {
+        setError(`Fejl ved tilføjelse af produkt: ${err.response.status} - ${err.response.data}`);
+      } else if (err.request) {
+        setError('Ingen respons fra serveren. Kontroller din serverforbindelse.');
+      } else {
+        setError(`Anmodningsfejl: ${err.message}`);
+      }
+      setSuccessMessage('');
+      
+    });
+  };
 
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1>Produkt Søgning</h1>
-        <input
-          type="text"
-          className="barcode-input"
-          value={barcode}
-          onChange={handleInputChange}
-          placeholder="Scan eller indtast stregkode"
-          autoFocus
-        />
+        <h1>Produkt Søgning og Tilføjelse</h1>
+  
+        <div className="tabs">
+          <button onClick={() => switchTab('search')} className={activeTab === 'search' ? 'active' : ''}>Søg Produkt</button>
+          <button onClick={() => switchTab('add')} className={activeTab === 'add' ? 'active' : ''}>Registrer Produkt</button>
+        </div>
       </header>
 
       <main className="product-info">
-        {barcode && <p className="scanned-barcode">Scannet Stregkode: {barcode}</p>}
-        {product ? (
-          <div className="product-card">
-            <h2>{product.name} {product.weight}</h2>
-            <p>Pris: <strong>{formatPrice(product.price)}</strong></p>
-            <button className="print-button" onClick={() => sendData(product)}>Print Prisen</button>
+      {successMessage && <p className="success-message">{successMessage}</p>}
+        {activeTab === 'search' ? (
+          <div>
+            <input
+              type="text"
+              className="barcode-input"
+              value={barcode}
+              onChange={handleInputChange}
+              placeholder="Scan eller indtast stregkode"
+              autoFocus
+            />
+            {barcode && <p className="scanned-barcode">Scannet Stregkode: {barcode}</p>}
+            {product ? (
+              <div className="product-card">
+                <h2>{product.productName} {product.productWeight}</h2>
+                <p>Pris: <strong>{formatPrice(product.retailPrice)}</strong></p>
+                {product.imageUrl && (
+                  <img src={product.imageUrl} alt={product.productName} className="product-image" width={150} height={150} />
+                )}
+                <button className="print-button" onClick={() => sendData(product)}>Print Prisen</button>
+              </div>
+            ) : (
+              error && <p className="error-message">{error}</p>
+            )}
           </div>
         ) : (
-          error && <p className="error-message">{error}</p>
+          <div className="add-product-form">
+                  {error && <p className="error-message">{error}</p>}
+
+            <h2>Tilføj Nyt Produkt</h2>
+            <input
+              type="text"
+              placeholder="Stregkode"
+              value={barcode}
+              onChange={(e) => setBarcode(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Produkt brand"
+              value={productBrand}
+              onChange={(e) => setProductBrand(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Produktnavn"
+              value={productName}
+              onChange={(e) => setProductName(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Produkt weight"
+              value={productWeight}
+              onChange={(e) => setProductWeight(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Pris"
+              value={retailPrice}
+              onChange={(e) => setRetailPrice(e.target.value)}
+            />
+            <button className="add-product-button" onClick={addProduct}>Tilføj Produkt</button>
+          </div>
         )}
+
       </main>
     </div>
   );

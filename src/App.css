@@ -136,3 +136,65 @@ body {
 .print-button:hover {
   background-color: #218838;
 }
+
+.tabs {
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  margin-right: 10px;
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.tabs button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.tabs button:hover {
+  background-color: #e0e0e0;
+}
+.add-product-form {
+  background-color: #f9f9f9; /* Lys baggrund */
+  border: 1px solid #ddd; /* Lys kant */
+  border-radius: 8px; /* Rundede hjørner */
+  padding: 20px; /* Indre margin */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Blød skygge */
+  max-width: 400px; /* Maksimal bredde */
+  margin: 20px auto; /* Centreret */
+}
+
+.add-product-form h2 {
+  color: #333; /* Mørkere tekstfarve */
+  margin-bottom: 15px; /* Margin under overskrift */
+  text-align: center; /* Centreret tekst */
+}
+
+.add-product-form input {
+  width: 100%; /* Fuldbredde input */
+  padding: 10px; /* Indre margin */
+  margin: 10px 0; /* Margin mellem inputfelter */
+  border: 1px solid #ccc; /* Lys kant */
+  border-radius: 4px; /* Rundede hjørner */
+  font-size: 16px; /* Skriftstørrelse */
+}
+
+.add-product-button {
+  background-color: #4CAF50; /* Grøn baggrund */
+  color: white; /* Hvid tekst */
+  border: none; /* Ingen kant */
+  padding: 10px 15px; /* Indre margin */
+  border-radius: 4px; /* Rundede hjørner */
+  font-size: 16px; /* Skriftstørrelse */
+  cursor: pointer; /* Pointer ved hover */
+  transition: background-color 0.3s; /* Glidende overgang */
+}
+
+.add-product-button:hover {
+  background-color: #45a049; /* Mørkere grøn ved hover */
+}
