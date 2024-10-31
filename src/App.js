@@ -5,6 +5,7 @@ import './App.css';
 
 const SERVER_ADDRESS = 'https://1d6e1e6c9b65.ngrok.app'; 
 
+
 function App() {
   const [activeTab, setActiveTab] = useState('search');
   const [barcode, setBarcode] = useState('');
@@ -28,7 +29,7 @@ function App() {
   };
 
   const fetchProduct = (barcode) => {
-    axios.get(`api/product/${barcode}`, {
+    axios.get(`http://5.182.18.135:5001/api/product/${barcode}`, {
      
     })
       .then(response => {
@@ -90,7 +91,7 @@ function App() {
   };
 
   const addProduct = () => {
-    axios.post(`api/products`, {
+    axios.post(`http://5.182.18.135:5001/api/products`, {
       barcode,
       productBrand,
       productName,
