@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import './App.css'; 
 
@@ -161,8 +161,7 @@ function App() {
           </div>
         ) : (
           <div className="add-product-form">
-                  {error && <p className="error-message">{error}</p>}
-
+            
             <h2>Tilføj Nyt Produkt</h2>
             <input
               type="text"
@@ -194,6 +193,8 @@ function App() {
               value={retailPrice}
               onChange={(e) => setRetailPrice(e.target.value)}
             />
+                  {error && <p className="error-message">{error}</p>}
+
             <button className="add-product-button" onClick={addProduct}>Tilføj Produkt</button>
           </div>
         )}
