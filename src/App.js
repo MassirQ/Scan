@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './App.css'; 
 
-const MySQLSERVER_ADDRESS = 'http://5.182.18.135:5001';
+
 const SERVER_ADDRESS = 'https://1d6e1e6c9b65.ngrok.app'; 
 
 function App() {
@@ -28,7 +28,9 @@ function App() {
   };
 
   const fetchProduct = (barcode) => {
-    axios.get(`${MySQLSERVER_ADDRESS}/api/product/${barcode}`)
+    axios.get(`api/product/${barcode}`, {
+     
+    })
       .then(response => {
         console.log('Serverrespons:', response.data); 
         
@@ -88,7 +90,7 @@ function App() {
   };
 
   const addProduct = () => {
-    axios.post(`${MySQLSERVER_ADDRESS}/api/products`, {
+    axios.post(`api/products`, {
       barcode,
       productBrand,
       productName,
@@ -96,7 +98,7 @@ function App() {
       retailPrice
     }, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       }
     })
     .then(response => {
