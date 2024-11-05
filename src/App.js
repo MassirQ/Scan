@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import axios from 'axios';
 import './App.css'; 
+import debounce from 'lodash.debounce'
 
 
 const SERVER_ADDRESS = 'https://1d6e1e6c9b65.ngrok.app'; 
@@ -28,31 +29,31 @@ function App() {
     setError('');
   };
 
-  const fetchProduct = (barcode) => {
-    axios.get(`http://5.182.18.135:5001/api/product/${barcode}`, {
-     
-    })
-      .then(response => {
-        console.log('Serverrespons:', response.data); 
-        
-        const foundProduct = response.data[0];
-        setBarcode('');
+  const fetchProduct = useCallback(
+    debounce((barcode) => {
+      axios.get(`https://scan.interpos.dk/api/product/${barcode}`)
+        .then(response => {
+          console.log('Serverrespons:', response.data); 
+          const foundProduct = response.data[0];
+          setBarcode('');
   
-        if (foundProduct) {
-          setProduct(foundProduct);
-          setError('');
-        } else {
+          if (foundProduct) {
+            setProduct(foundProduct);
+            setError('');
+          } else {
+            setProduct(null);
+            setError('Produkt ikke fundet!');
+          }
+        })
+        .catch(err => {
+          console.error('Fejl ved hentning af produktdata', err);
+          setError('Der opstod en fejl ved hentning af produktet.');
           setProduct(null);
-          setError('Produkt ikke fundet!');
-        }
-      })
-      .catch(err => {
-        console.error('Fejl ved hentning af produktdata', err);
-        setError('Der opstod en fejl ved hentning af produktet.');
-        setProduct(null);
-        setBarcode('');
-      });
-  };
+          setBarcode('');
+        });
+    }, 500), // 500 ms debounce delay
+    []
+  );
   
   const handleInputChange = (event) => {
     const inputBarcode = event.target.value.trim();
@@ -91,7 +92,7 @@ function App() {
   };
 
   const addProduct = () => {
-    axios.post(`http://5.182.18.135:5001/api/products`, {
+    axios.post(`https://scan.interpos.dk/api/products`, {
       barcode,
       productBrand,
       productName,
