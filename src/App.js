@@ -40,29 +40,33 @@ function App() {
         .then(response => {
           console.log('Serverrespons:', response.data);
           const foundProduct = response.data[0];
+          setBarcode('');
   
           if (response.status === 200 && foundProduct) {
             setProduct(foundProduct);
             setError('');
+            
           } else if (response.status === 404) {
             setProduct(null);
             setError('Produkt ikke fundet!');
           } else {
             setProduct(null);
+            setBarcode('');
             setError('Ukendt fejl opstod.');
           }
         })
         .catch(err => {
           console.error('Fejl ved hentning af produktdata', err);
-          // Her kan du også tjekke err.response for mere information
+
           if (err.response) {
             setError(`Server fejl: ${err.response.status} - ${err.response.data}`);
           } else {
             setError('Der opstod en fejl ved hentning af produktet. Kontroller din internetforbindelse.');
           }
           setProduct(null);
+          setBarcode('');
         });
-    }, 500), // 500 ms debounce delay
+    }, 500), 
     []
   );
   
