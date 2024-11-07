@@ -66,7 +66,7 @@ function App() {
           setProduct(null);
           setBarcode('');
         });
-    }, 500), 
+    }, 150), 
     []
   );
   
