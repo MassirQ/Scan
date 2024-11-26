@@ -4,7 +4,7 @@ import './App.css';
 import debounce from 'lodash.debounce'
 
 
-const SERVER_ADDRESS = 'https://3d61b5c8b718.ngrok.app'; 
+const SERVER_ADDRESS = 'https://c897165a2d68.ngrok.app'; 
 
 
 function App() {
