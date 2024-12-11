@@ -17,6 +17,8 @@ function App() {
   const [retailPrice, setRetailPrice] = useState('');
   const [error, setError] = useState('');
   const [successMessage,setSuccessMessage] = useState('');
+  const [showModal, setShowModal] = useState(false);
+
 
   const switchTab = (tab) => {
     setActiveTab(tab);
@@ -119,13 +121,15 @@ function App() {
       }
     })
     .then(response => {
-      setSuccessMessage('Produkt tilføjet succesfuldt med ID: ' + response.data.productId);
+      setSuccessMessage('Produkt tilføjet succesfuldt med navn: ' + productName + " " + 'Stregkode:' + barcode);
       setError('');
       setBarcode('');
       setProductBrand('');
       setProductName('');
       setProductWeight('');
       setRetailPrice('');
+      setShowModal(true); 
+
     })
     .catch(err => {
       console.error('Fejl ved tilføjelse af produkt:', err);
@@ -216,9 +220,19 @@ function App() {
 
             <button className="add-product-button" onClick={addProduct}>Tilføj Produkt</button>
           </div>
+          
         )}
 
       </main>
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Succes!</h2>
+            <p>{successMessage}</p>
+            <button onClick={() => setShowModal(false)}>Luk</button>
+          </div>
+        </div>
+            )}
     </div>
   );
 }
